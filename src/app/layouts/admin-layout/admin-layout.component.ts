@@ -27,7 +27,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
           <!-- Logo & Title -->
           <div class="flex items-center gap-3">
-            <img src="assets/logo.svg" alt="SMP Logo" class="h-9 w-9 object-contain drop-shadow-sm" />
+            <img src="assets/logo.png" alt="SMP Logo" class="h-9 w-9 object-contain drop-shadow-sm" />
             <div>
               <h1 class="text-base font-bold tracking-tight text-white leading-tight">San Martín de Porres</h1>
               <p class="text-xs text-blue-200 font-medium">Gestión Institucional</p>
