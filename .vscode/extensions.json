@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "Angular.ng-template",
+    "bradlc.vscode-tailwindcss",
+    "biomejs.biome",
+    "esbenp.prettier-vscode"
+  ]
+}
