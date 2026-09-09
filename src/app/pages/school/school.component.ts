@@ -47,7 +47,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
         <!-- School Profile Badge Card -->
         <div class="card-smp p-6 flex flex-col items-center text-center space-y-4">
           <div class="w-24 h-24 p-3 rounded-2xl bg-slate-50 shadow-inner border border-slate-100 flex items-center justify-center">
-            <img src="assets/logo.svg" alt="SMP Logo" class="w-full h-full object-contain drop-shadow" />
+            <img src="assets/logo.png" alt="SMP Logo" class="w-full h-full object-contain drop-shadow" />
           </div>
 
           <div>

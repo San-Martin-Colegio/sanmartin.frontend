@@ -17,7 +17,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
       <div class="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md p-8 sm:p-10 flex flex-col items-center border border-white/20">
         <!-- Institution Logo -->
         <div class="w-20 h-20 mb-3 p-2 bg-slate-50 rounded-2xl shadow-inner flex items-center justify-center border border-slate-100">
-          <img src="assets/logo.svg" alt="Logo SMP" class="w-full h-full object-contain" />
+          <img src="assets/logo.png" alt="Logo SMP" class="w-full h-full object-contain" />
         </div>
 
         <h1 class="text-primary text-2xl font-extrabold text-center tracking-tight">San Martín de Porres</h1>
