@@ -1,14 +1,15 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
-import { InventoryStats, Group } from '../../core/models/models';
+import { InventoryStats, Group, MaterialSummary, Computer } from '../../core/models/models';
 import { IconsModule } from '../../shared/icons/icons.module';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconsModule],
+  imports: [CommonModule, RouterLink, FormsModule, IconsModule],
   template: `
     <div class="space-y-6">
       <!-- Header banner -->
@@ -16,13 +17,13 @@ import { IconsModule } from '../../shared/icons/icons.module';
         <div>
           <h2 class="text-2xl font-bold tracking-tight">Panel de Control</h2>
           <p class="text-sm text-blue-200 mt-1">
-            Resumen en tiempo real del inventario, estado de bienes y actividad escolar.
+            Resumen en tiempo real de materiales, equipos y actividad escolar.
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <a routerLink="/admin/inventory" class="btn-secondary text-xs sm:text-sm py-2 px-4 shadow flex items-center gap-2">
-            <lucide-icon name="package" [size]="16"></lucide-icon>
-            <span>Ver Inventario</span>
+          <a routerLink="/admin/categories" class="btn-danger text-xs sm:text-sm py-2 px-4 shadow flex items-center gap-2">
+            <lucide-icon name="tags" [size]="16"></lucide-icon>
+            <span>Gestionar materiales</span>
           </a>
         </div>
       </div>
@@ -45,8 +46,8 @@ import { IconsModule } from '../../shared/icons/icons.module';
               <lucide-icon name="package" [size]="24" class="text-blue-600"></lucide-icon>
             </div>
             <div>
-              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total de Bienes</p>
-              <h3 class="text-2xl font-extrabold text-slate-800 mt-0.5">{{ stats()?.total || 0 }}</h3>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total de Materiales</p>
+              <h3 class="text-2xl font-extrabold text-slate-800 mt-0.5">{{ materialTotal() }}</h3>
               <span class="text-[11px] text-slate-400">Unidades en registro</span>
             </div>
           </div>
@@ -88,36 +89,45 @@ import { IconsModule } from '../../shared/icons/icons.module';
           </div>
         </div>
 
-        <!-- Groups Distribution Cards -->
+        <!-- Material stock filter -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div><h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><lucide-icon name="filter" [size]="18" class="text-primary"></lucide-icon><span>Materiales por área / zona</span></h3><p class="text-xs text-slate-400 mt-1">El total general suma las cantidades registradas en todas las áreas.</p></div>
+            <select [(ngModel)]="selectedAreaId" (ngModelChange)="onAreaChange()" class="select-smp sm:w-64"><option value="">Total general</option><option *ngFor="let area of groups()" [value]="area.id">{{ area.name }}</option></select>
+          </div>
+          <div *ngIf="materialTotals().length === 0" class="py-6 text-center text-slate-400 text-sm">No hay materiales registrados para este filtro.</div>
+          <div *ngIf="materialTotals().length" class="flex flex-wrap gap-3"><div *ngFor="let material of materialTotals()" class="flex-1 min-w-[250px] rounded-xl border border-slate-200 bg-slate-50 p-4 flex justify-between items-center"><div><p class="font-bold text-slate-800 text-sm">{{ material.name }}</p><p class="text-xs text-slate-400">{{ selectedAreaId ? selectedAreaName() : 'Todas las áreas / zonas' }}</p></div><span class="text-xl font-extrabold text-primary">{{ material.quantity }}</span></div></div>
+        </div>
+
+        <!-- Areas Distribution Cards -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
               <lucide-icon name="tags" [size]="18" class="text-primary"></lucide-icon>
-              <span>Distribución por Grupos</span>
+              <span>Distribución por Áreas / Zonas</span>
             </h3>
             <a routerLink="/admin/categories" class="text-xs text-primary hover:underline font-semibold flex items-center gap-1">
-              <span>Administrar Grupos</span>
+              <span>Administrar áreas y materiales</span>
               <span>&rarr;</span>
             </a>
           </div>
 
           <div *ngIf="groups().length === 0" class="text-center py-6 text-slate-400 text-sm">
-            No se han registrado grupos en el sistema.
+            No se han registrado áreas o zonas en el sistema.
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             <div
               *ngFor="let g of groups()"
               class="bg-slate-50 hover:bg-slate-100 p-4 rounded-xl border border-slate-200/80 text-center transition-all cursor-pointer"
-              routerLink="/admin/inventory"
-              [queryParams]="{ groupId: g.id }"
+              routerLink="/admin/categories"
             >
               <div class="flex justify-center mb-1 text-primary">
                 <lucide-icon name="folder" [size]="24"></lucide-icon>
               </div>
               <p class="font-bold text-slate-800 text-xs truncate">{{ g.name }}</p>
               <p class="text-xs text-slate-500 font-semibold mt-1">
-                {{ stats()?.byGroup?.[g.id] || 0 }} ítems
+                {{ stats()?.byGroup?.[g.id] || 0 }} materiales
               </p>
             </div>
           </div>
@@ -131,13 +141,13 @@ import { IconsModule } from '../../shared/icons/icons.module';
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-rose-800 flex items-center gap-2">
                   <lucide-icon name="alert-triangle" [size]="18" class="text-rose-600"></lucide-icon>
-                  Ítems que Requieren Atención (Estado Malo)
+                  Materiales que Requieren Atención (Estado Malo)
                 </h3>
               </div>
 
               <div *ngIf="!stats()?.attention?.length" class="text-center py-8 text-slate-400 text-sm flex flex-col items-center gap-2">
                 <lucide-icon name="check-circle-2" [size]="28" class="text-emerald-500"></lucide-icon>
-                <span>No hay ningún bien registrado en mal estado.</span>
+                <span>No hay ningún material registrado en mal estado.</span>
               </div>
 
               <div *ngIf="stats()?.attention?.length" class="overflow-x-auto">
@@ -161,8 +171,8 @@ import { IconsModule } from '../../shared/icons/icons.module';
             </div>
 
             <div class="mt-4 pt-3 border-t text-right">
-              <a routerLink="/admin/inventory" [queryParams]="{ status: 'Malo' }" class="text-xs text-rose-600 hover:underline font-semibold">
-                Ver todos los ítems críticos &rarr;
+              <a routerLink="/admin/categories" class="text-xs text-rose-600 hover:underline font-semibold">
+                Gestionar materiales &rarr;
               </a>
             </div>
           </div>
@@ -214,8 +224,8 @@ import { IconsModule } from '../../shared/icons/icons.module';
             </div>
 
             <div class="mt-4 pt-3 border-t text-right">
-              <a routerLink="/admin/inventory" class="text-xs text-primary hover:underline font-semibold">
-                Ver inventario completo &rarr;
+              <a routerLink="/admin/computers" class="text-xs text-primary hover:underline font-semibold">
+                Ver módulo de cómputo &rarr;
               </a>
             </div>
           </div>
@@ -227,6 +237,17 @@ import { IconsModule } from '../../shared/icons/icons.module';
 export class DashboardComponent implements OnInit {
   stats = signal<InventoryStats | null>(null);
   groups = signal<Group[]>([]);
+  materialSummary = signal<MaterialSummary[]>([]);
+  computers = signal<Computer[]>([]);
+  selectedAreaId = '';
+  materialTotals() {
+    const totals = new Map(this.materialSummary().map((material) => [material.name, material.quantity]));
+    const areaId = this.selectedAreaId ? Number(this.selectedAreaId) : null;
+    const laptops = this.computers().filter((computer) => !areaId || computer.areaId === areaId).length;
+    if (laptops) totals.set('Laptops', (totals.get('Laptops') || 0) + laptops);
+    return Array.from(totals, ([name, quantity]) => ({ name, quantity }));
+  }
+  materialTotal() { return this.materialSummary().reduce((total, material) => total + material.quantity, 0); }
   isLoading = signal(true);
 
   constructor(private readonly apiService: ApiService) {}
@@ -243,8 +264,25 @@ export class DashboardComponent implements OnInit {
         this.apiService.get<Group[]>('/groups').subscribe({
           next: (groups) => {
             this.groups.set(groups);
-            this.isLoading.set(false);
+            this.loadMaterialTotals();
           },
+          error: () => this.isLoading.set(false),
+        });
+      },
+      error: () => this.isLoading.set(false),
+    });
+  }
+
+  selectedAreaName() { return this.groups().find((area) => area.id === Number(this.selectedAreaId))?.name || 'Área / zona'; }
+
+  onAreaChange() { this.loadMaterialTotals(); }
+
+  private loadMaterialTotals() {
+    this.apiService.get<MaterialSummary[]>('/materials/summary', { groupId: this.selectedAreaId || undefined }).subscribe({
+      next: (materials) => {
+        this.materialSummary.set(materials);
+        this.apiService.get<Computer[]>('/computers').subscribe({
+          next: (computers) => { this.computers.set(computers); this.isLoading.set(false); },
           error: () => this.isLoading.set(false),
         });
       },

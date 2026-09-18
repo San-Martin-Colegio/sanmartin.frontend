@@ -80,13 +80,13 @@ import { IconsModule } from '../../shared/icons/icons.module';
             </a>
 
             <a
-              routerLink="/admin/inventory"
+              routerLink="/admin/computers"
               routerLinkActive="bg-primary text-white shadow-sm font-semibold"
               (click)="closeSidebarOnMobile()"
               class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
             >
-              <lucide-icon name="package" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
-              <span>Inventario</span>
+              <lucide-icon name="monitor" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
+              <span>Cómputo</span>
             </a>
 
             <a
@@ -96,7 +96,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
               class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
             >
               <lucide-icon name="tags" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
-              <span>Categorías</span>
+              <span>Áreas / Zonas y Materiales</span>
             </a>
 
             <a
