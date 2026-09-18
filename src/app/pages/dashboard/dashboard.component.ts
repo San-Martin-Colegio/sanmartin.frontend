@@ -15,13 +15,13 @@ import { IconsModule } from '../../shared/icons/icons.module';
       <!-- Header banner -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gradient-to-r from-primary to-slate-800 p-6 rounded-2xl text-white shadow-sm border border-slate-700/50">
         <div>
-          <h2 class="text-2xl font-bold tracking-tight">Panel de Control</h2>
+          <h2 class="text-2xl font-bold tracking-tight text-white">Panel de Control</h2>
           <p class="text-sm text-blue-200 mt-1">
             Resumen en tiempo real de materiales, equipos y actividad escolar.
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <a routerLink="/admin/categories" class="btn-danger text-xs sm:text-sm py-2 px-4 shadow flex items-center gap-2">
+          <a routerLink="/admin/categories" class="bg-orange-500 hover:bg-orange-600 active:scale-[.98] text-white font-semibold text-xs sm:text-sm py-2 px-4 rounded-xl shadow-sm shadow-orange-500/25 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:ring-offset-2 focus:ring-offset-primary">
             <lucide-icon name="tags" [size]="16"></lucide-icon>
             <span>Gestionar materiales</span>
           </a>
@@ -41,50 +41,50 @@ import { IconsModule } from '../../shared/icons/icons.module';
         <!-- 4 Metric Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Total Items -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div class="dashboard-metric bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
               <lucide-icon name="package" [size]="24" class="text-blue-600"></lucide-icon>
             </div>
             <div>
               <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total de Materiales</p>
-              <h3 class="text-2xl font-extrabold text-slate-800 mt-0.5">{{ materialTotal() }}</h3>
+              <h3 class="dashboard-number text-2xl font-extrabold text-slate-800 mt-0.5">{{ materialTotal() }}</h3>
               <span class="text-[11px] text-slate-400">Unidades en registro</span>
             </div>
           </div>
 
           <!-- Bueno -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div class="dashboard-metric bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
               <lucide-icon name="check-circle-2" [size]="24" class="text-emerald-600"></lucide-icon>
             </div>
             <div>
-              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado Bueno</p>
-              <h3 class="text-2xl font-extrabold text-emerald-600 mt-0.5">{{ stats()?.byStatus?.Bueno || 0 }}</h3>
-              <span class="text-[11px] text-slate-400">En óptimas condiciones</span>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Laptops: Bueno</p>
+              <h3 class="dashboard-number text-2xl font-extrabold text-emerald-600 mt-0.5">{{ computerStatusCount('Bueno') }}</h3>
+              <span class="text-[11px] text-slate-400">Laptops en óptimas condiciones</span>
             </div>
           </div>
 
           <!-- Regular -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div class="dashboard-metric bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center">
               <lucide-icon name="alert-triangle" [size]="24" class="text-amber-600"></lucide-icon>
             </div>
             <div>
-              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado Regular</p>
-              <h3 class="text-2xl font-extrabold text-amber-600 mt-0.5">{{ stats()?.byStatus?.Regular || 0 }}</h3>
-              <span class="text-[11px] text-slate-400">Uso operativo parcial</span>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Laptops: Regular</p>
+              <h3 class="dashboard-number text-2xl font-extrabold text-amber-600 mt-0.5">{{ computerStatusCount('Regular') }}</h3>
+              <span class="text-[11px] text-slate-400">Laptops con uso operativo parcial</span>
             </div>
           </div>
 
           <!-- Malo -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+          <div class="dashboard-metric bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center">
               <lucide-icon name="x-circle" [size]="24" class="text-rose-600"></lucide-icon>
             </div>
             <div>
-              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Requiere Atención</p>
-              <h3 class="text-2xl font-extrabold text-rose-600 mt-0.5">{{ stats()?.byStatus?.Malo || 0 }}</h3>
-              <span class="text-[11px] text-rose-500 font-medium">Bienes deteriorados</span>
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Laptops: Malo</p>
+              <h3 class="dashboard-number text-2xl font-extrabold text-rose-600 mt-0.5">{{ computerStatusCount('Malo') }}</h3>
+              <span class="text-[11px] text-rose-500 font-medium">Laptops que requieren atención</span>
             </div>
           </div>
         </div>
@@ -248,6 +248,7 @@ export class DashboardComponent implements OnInit {
     return Array.from(totals, ([name, quantity]) => ({ name, quantity }));
   }
   materialTotal() { return this.materialSummary().reduce((total, material) => total + material.quantity, 0); }
+  computerStatusCount(status: string) { return this.computers().filter((computer) => computer.status === status).length; }
   isLoading = signal(true);
 
   constructor(private readonly apiService: ApiService) {}
