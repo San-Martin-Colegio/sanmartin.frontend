@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -281,7 +281,7 @@ export class TeachersComponent implements OnInit {
     status: 'Activo',
   };
 
-  filteredTeachers = computed(() => {
+  filteredTeachers(): Teacher[] {
     const q = this.searchQuery.trim().toLowerCase();
     if (!q) return this.teachers();
     return this.teachers().filter((t) => {
@@ -289,7 +289,7 @@ export class TeachersComponent implements OnInit {
       const spec = (t.specialty || '').toLowerCase();
       return full.includes(q) || spec.includes(q);
     });
-  });
+  }
 
   constructor(
     private readonly apiService: ApiService,

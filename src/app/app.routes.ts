@@ -3,7 +3,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { InventoryComponent } from './pages/inventory/inventory.component';
+import { ComputersComponent } from './pages/computers/computers.component';
 import { CategoriesComponent } from './pages/categories/categories.component';
 import { TeachersComponent } from './pages/teachers/teachers.component';
 import { SchedulesComponent } from './pages/schedules/schedules.component';
@@ -29,8 +29,8 @@ export const routes: Routes = [
         component: DashboardComponent,
       },
       {
-        path: 'inventory',
-        component: InventoryComponent,
+        path: 'computers',
+        component: ComputersComponent,
       },
       {
         path: 'categories',

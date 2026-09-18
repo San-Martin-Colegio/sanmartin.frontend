@@ -36,6 +36,7 @@ import {
   FileText,
   HelpCircle,
   Filter,
+  Monitor,
 } from 'lucide-angular';
 
 const icons = {
@@ -74,6 +75,7 @@ const icons = {
   FileText,
   HelpCircle,
   Filter,
+  Monitor,
 };
 
 @NgModule({
