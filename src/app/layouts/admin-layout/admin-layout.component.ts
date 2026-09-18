@@ -10,9 +10,9 @@ import { IconsModule } from '../../shared/icons/icons.module';
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent, IconsModule],
   template: `
-    <div class="min-h-screen bg-slate-50 flex flex-col">
+    <div class="min-h-screen bg-[#f6f8fc] flex flex-col">
       <!-- Top Header -->
-      <header class="fixed top-0 left-0 right-0 h-16 bg-primary text-white flex items-center justify-between px-4 lg:px-6 z-40 shadow-md">
+      <header class="fixed top-0 left-0 right-0 h-[4.5rem] bg-gradient-to-r from-primary-dark via-primary to-[#274c78] text-white flex items-center justify-between px-4 lg:px-7 z-40 shadow-lg shadow-primary/15 border-b border-white/10">
         <div class="flex items-center gap-3">
           <!-- Mobile Menu Toggle Button -->
           <button
@@ -27,10 +27,10 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
           <!-- Logo & Title -->
           <div class="flex items-center gap-3">
-            <img src="assets/logo.png" alt="SMP Logo" class="h-9 w-9 object-contain drop-shadow-sm" />
+            <div class="h-10 w-10 rounded-xl bg-white/10 border border-white/15 p-1.5 backdrop-blur-sm"><img src="assets/logo.png" alt="SMP Logo" class="h-full w-full object-contain drop-shadow-sm" /></div>
             <div>
               <h1 class="text-base font-bold tracking-tight text-white leading-tight">San Martín de Porres</h1>
-              <p class="text-xs text-blue-200 font-medium">Gestión Institucional</p>
+              <p class="text-[11px] text-blue-100/80 font-medium tracking-wide">Gestión Institucional</p>
             </div>
           </div>
         </div>
@@ -58,10 +58,10 @@ import { IconsModule } from '../../shared/icons/icons.module';
       </header>
 
       <!-- Sidebar + Main content layout -->
-      <div class="flex flex-1 pt-16">
+      <div class="flex flex-1 pt-[4.5rem]">
         <!-- Sidebar Navigation -->
         <aside
-          class="fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-slate-200 z-30 transition-transform duration-300 ease-in-out flex flex-col justify-between"
+          class="fixed left-0 top-[4.5rem] bottom-0 w-[17rem] bg-white/95 backdrop-blur-xl border-r border-slate-200/80 z-30 transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-[4px_0_18px_rgba(15,23,42,.025)]"
           [ngClass]="{
             'translate-x-0': isSidebarOpen(),
             '-translate-x-full lg:translate-x-0': !isSidebarOpen()
@@ -70,10 +70,10 @@ import { IconsModule } from '../../shared/icons/icons.module';
           <nav class="p-4 space-y-1.5 overflow-y-auto flex-1">
             <a
               routerLink="/admin/dashboard"
-              routerLinkActive="bg-primary text-white shadow-sm font-semibold"
+              routerLinkActive="bg-primary text-white shadow-md shadow-primary/20 font-semibold"
               [routerLinkActiveOptions]="{ exact: true }"
               (click)="closeSidebarOnMobile()"
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-primary/5 hover:text-primary transition-all duration-200 group"
             >
               <lucide-icon name="layout-dashboard" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
               <span>Dashboard</span>
@@ -81,9 +81,9 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
             <a
               routerLink="/admin/computers"
-              routerLinkActive="bg-primary text-white shadow-sm font-semibold"
+              routerLinkActive="bg-primary text-white shadow-md shadow-primary/20 font-semibold"
               (click)="closeSidebarOnMobile()"
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-primary/5 hover:text-primary transition-all duration-200 group"
             >
               <lucide-icon name="monitor" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
               <span>Cómputo</span>
@@ -91,9 +91,9 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
             <a
               routerLink="/admin/categories"
-              routerLinkActive="bg-primary text-white shadow-sm font-semibold"
+              routerLinkActive="bg-primary text-white shadow-md shadow-primary/20 font-semibold"
               (click)="closeSidebarOnMobile()"
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-primary/5 hover:text-primary transition-all duration-200 group"
             >
               <lucide-icon name="tags" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
               <span>Áreas / Zonas y Materiales</span>
@@ -101,9 +101,9 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
             <a
               routerLink="/admin/teachers"
-              routerLinkActive="bg-primary text-white shadow-sm font-semibold"
+              routerLinkActive="bg-primary text-white shadow-md shadow-primary/20 font-semibold"
               (click)="closeSidebarOnMobile()"
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-primary/5 hover:text-primary transition-all duration-200 group"
             >
               <lucide-icon name="graduation-cap" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
               <span>Docentes</span>
@@ -111,9 +111,9 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
             <a
               routerLink="/admin/schedules"
-              routerLinkActive="bg-primary text-white shadow-sm font-semibold"
+              routerLinkActive="bg-primary text-white shadow-md shadow-primary/20 font-semibold"
               (click)="closeSidebarOnMobile()"
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-primary/5 hover:text-primary transition-all duration-200 group"
             >
               <lucide-icon name="calendar" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
               <span>Horarios</span>
@@ -121,9 +121,9 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
             <a
               routerLink="/admin/school"
-              routerLinkActive="bg-primary text-white shadow-sm font-semibold"
+              routerLinkActive="bg-primary text-white shadow-md shadow-primary/20 font-semibold"
               (click)="closeSidebarOnMobile()"
-              class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary transition-all group"
+              class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-primary/5 hover:text-primary transition-all duration-200 group"
             >
               <lucide-icon name="school" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
               <span>Colegio</span>
@@ -148,7 +148,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
         ></div>
 
         <!-- Main Content Area -->
-        <main class="flex-1 lg:ml-64 p-4 lg:p-8 min-h-[calc(100vh-4rem)] max-w-7xl w-full mx-auto">
+        <main class="flex-1 lg:ml-[17rem] p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4.5rem)] max-w-[96rem] w-full mx-auto">
           <router-outlet></router-outlet>
         </main>
       </div>

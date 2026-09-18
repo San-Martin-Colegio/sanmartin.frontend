@@ -11,7 +11,7 @@ import { IconsModule } from '../../icons/icons.module';
     <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
       <div
         *ngFor="let t of toastService.toasts()"
-        class="pointer-events-auto flex items-center justify-between p-4 rounded-xl shadow-lg border text-sm transition-all duration-300 transform translate-y-0"
+        class="pointer-events-auto flex items-center justify-between p-4 rounded-2xl shadow-xl shadow-slate-950/10 border text-sm transition-all duration-300 transform translate-y-0"
         [ngClass]="{
           'bg-emerald-50 border-emerald-200 text-emerald-800': t.type === 'success',
           'bg-rose-50 border-rose-200 text-rose-800': t.type === 'error',

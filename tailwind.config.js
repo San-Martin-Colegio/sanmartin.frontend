@@ -9,13 +9,13 @@ module.exports = {
         primary: {
           DEFAULT: '#1e3a5f',
           hover: '#172e4c',
-          dark: '#112239',
-          light: '#2a4f7e',
+          dark: '#10213d',
+          light: '#315c91',
         },
         secondary: {
-          DEFAULT: '#d4a843',
-          hover: '#bf9432',
-          light: '#f5e8c7',
+          DEFAULT: '#14b8a6',
+          hover: '#0f9488',
+          light: '#ccfbf1',
         },
         smp: {
           navy: '#1e3a5f',

@@ -9,17 +9,17 @@ import { IconsModule } from '../../icons/icons.module';
   template: `
     <div
       *ngIf="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto bg-slate-900/50 backdrop-blur-sm transition-opacity"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto bg-slate-950/45 backdrop-blur-md transition-opacity"
       (click)="onBackdropClick($event)"
     >
       <div
-        class="relative w-full bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col"
+        class="relative w-full bg-white rounded-3xl shadow-2xl shadow-slate-950/25 border border-white/70 overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col"
         [ngClass]="maxWidth"
         (click)="$event.stopPropagation()"
       >
         <!-- Modal Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-slate-50/50">
-          <h3 class="text-lg font-bold text-primary">{{ title }}</h3>
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/70">
+          <h3 class="text-lg font-bold tracking-tight text-primary">{{ title }}</h3>
           <button
             type="button"
             (click)="onClose()"
@@ -35,7 +35,7 @@ import { IconsModule } from '../../icons/icons.module';
         </div>
 
         <!-- Modal Footer -->
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
+        <div class="px-6 py-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-end gap-3">
           <ng-content select="[footer]"></ng-content>
         </div>
       </div>
