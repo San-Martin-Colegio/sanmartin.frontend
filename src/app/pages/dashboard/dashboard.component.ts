@@ -117,10 +117,11 @@ import { IconsModule } from '../../shared/icons/icons.module';
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            <div
+            <a
               *ngFor="let g of groups()"
-              class="bg-slate-50 hover:bg-slate-100 p-4 rounded-xl border border-slate-200/80 text-center transition-all cursor-pointer"
+              class="bg-slate-50 hover:bg-slate-100 p-4 rounded-xl border border-slate-200/80 text-center transition-all cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               routerLink="/admin/categories"
+              [queryParams]="{ groupId: g.id }"
             >
               <div class="flex justify-center mb-1 text-primary">
                 <lucide-icon name="folder" [size]="24"></lucide-icon>
@@ -129,7 +130,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
               <p class="text-xs text-slate-500 font-semibold mt-1">
                 {{ stats()?.byGroup?.[g.id] || 0 }} materiales
               </p>
-            </div>
+            </a>
           </div>
         </div>
 
