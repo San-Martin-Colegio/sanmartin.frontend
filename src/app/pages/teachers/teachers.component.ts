@@ -37,6 +37,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
           <input
             type="text"
             [(ngModel)]="searchQuery"
+            (ngModelChange)="page = 1"
             placeholder="Buscar por nombres, apellidos o especialidad..."
             class="input-smp pl-9"
           />
@@ -75,7 +76,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-              <tr *ngFor="let t of filteredTeachers()" class="hover:bg-slate-50/80 transition-colors">
+              <tr *ngFor="let t of pagedTeachers()" class="hover:bg-slate-50/80 transition-colors">
                 <td class="py-3.5 px-4 font-bold text-slate-900">
                   <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
@@ -131,6 +132,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
             </tbody>
           </table>
         </div>
+        <div *ngIf="!isLoading() && filteredTeachers().length > pageSize" class="flex items-center justify-between border-t border-slate-100 p-4 text-xs text-slate-500"><span>Página {{ page }} de {{ pageCount() }}</span><div class="flex gap-2"><button class="btn-outline py-1.5" [disabled]="page === 1" (click)="page = page - 1">Anterior</button><button class="btn-outline py-1.5" [disabled]="page >= pageCount()" (click)="page = page + 1">Siguiente</button></div></div>
       </div>
 
       <!-- Create / Edit Teacher Modal -->
@@ -261,6 +263,8 @@ import { IconsModule } from '../../shared/icons/icons.module';
 export class TeachersComponent implements OnInit {
   teachers = signal<Teacher[]>([]);
   searchQuery = '';
+  page = 1;
+  readonly pageSize = 10;
   isLoading = signal(true);
   isSaving = signal(false);
 
@@ -290,6 +294,8 @@ export class TeachersComponent implements OnInit {
       return full.includes(q) || spec.includes(q);
     });
   }
+  pageCount() { return Math.max(1, Math.ceil(this.filteredTeachers().length / this.pageSize)); }
+  pagedTeachers() { return this.filteredTeachers().slice((this.page - 1) * this.pageSize, this.page * this.pageSize); }
 
   constructor(
     private readonly apiService: ApiService,
@@ -306,6 +312,7 @@ export class TeachersComponent implements OnInit {
     this.apiService.get<Teacher[]>('/teachers').subscribe({
       next: (data) => {
         this.teachers.set(data);
+        this.page = Math.min(this.page, this.pageCount());
         this.isLoading.set(false);
       },
       error: () => {
