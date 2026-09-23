@@ -117,6 +117,14 @@ import { IconsModule } from '../../shared/icons/icons.module';
             </thead>
             <tbody class="divide-y divide-slate-200 text-xs">
               <ng-container *ngFor="let b of blocks">
+                <tr *ngIf="b.block === 8" class="bg-orange-100/70 font-bold text-orange-900 border-y-2 border-orange-200">
+                  <td colspan="7" class="py-2 text-center tracking-wider text-xs">
+                    <div class="flex items-center justify-center gap-1.5">
+                      <lucide-icon name="coffee" [size]="15" class="text-orange-800"></lucide-icon>
+                      <span>ALMUERZO (12:30 - 13:00)</span>
+                    </div>
+                  </td>
+                </tr>
                 <!-- Recreo Separator between Block 3 and 4 -->
                 <tr *ngIf="b.block === 4" class="bg-amber-100/60 font-bold text-amber-900 border-y-2 border-amber-200">
                   <td colspan="7" class="py-2 text-center tracking-wider text-xs">

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
-import { AreaMaterialStock, InventoryStats, Group, MaterialSummary, Computer } from '../../core/models/models';
+import { AreaMaterialStock, Group, MaterialSummary, Computer } from '../../core/models/models';
 import { IconsModule } from '../../shared/icons/icons.module';
 
 @Component({
@@ -101,24 +101,24 @@ import { IconsModule } from '../../shared/icons/icons.module';
 
         <!-- Areas Distribution Cards -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
               <lucide-icon name="tags" [size]="18" class="text-primary"></lucide-icon>
               <span>Distribución por Áreas / Zonas</span>
             </h3>
-            <a routerLink="/admin/categories" class="text-xs text-primary hover:underline font-semibold flex items-center gap-1">
-              <span>Administrar áreas y materiales</span>
-              <span>&rarr;</span>
-            </a>
+            <div class="flex items-center gap-3">
+              <button *ngIf="groups().length > collapsedGroupLimit" type="button" (click)="distributionExpanded.set(!distributionExpanded())" class="text-xs text-primary hover:bg-primary/5 font-semibold flex items-center gap-1 rounded-lg px-2 py-1.5 transition-colors" [attr.aria-expanded]="distributionExpanded()" aria-controls="area-distribution-grid"><span>{{ distributionExpanded() ? 'Ver menos' : 'Ver más' }}</span><lucide-icon name="chevron-down" [size]="15" class="transition-transform" [ngClass]="distributionExpanded() ? 'rotate-180' : ''"></lucide-icon></button>
+              <a routerLink="/admin/categories" class="text-xs text-primary hover:underline font-semibold flex items-center gap-1"><span>Administrar áreas y materiales</span><span>&rarr;</span></a>
+            </div>
           </div>
 
           <div *ngIf="groups().length === 0" class="text-center py-6 text-slate-400 text-sm">
             No se han registrado áreas o zonas en el sistema.
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div id="area-distribution-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             <a
-              *ngFor="let g of groups()"
+              *ngFor="let g of visibleGroups()"
               class="bg-slate-50 hover:bg-slate-100 p-4 rounded-xl border border-slate-200/80 text-center transition-all cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               routerLink="/admin/categories"
               [queryParams]="{ groupId: g.id }"
@@ -142,29 +142,29 @@ import { IconsModule } from '../../shared/icons/icons.module';
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base font-bold text-rose-800 flex items-center gap-2">
                   <lucide-icon name="alert-triangle" [size]="18" class="text-rose-600"></lucide-icon>
-                  Materiales que Requieren Atención (Estado Malo)
+                  Laptops que Requieren Atención (Estado Malo)
                 </h3>
               </div>
 
-              <div *ngIf="!stats()?.attention?.length" class="text-center py-8 text-slate-400 text-sm flex flex-col items-center gap-2">
+              <div *ngIf="!attentionComputers().length" class="text-center py-8 text-slate-400 text-sm flex flex-col items-center gap-2">
                 <lucide-icon name="check-circle-2" [size]="28" class="text-emerald-500"></lucide-icon>
-                <span>No hay ningún material registrado en mal estado.</span>
+                <span>No hay laptops registradas en mal estado.</span>
               </div>
 
-              <div *ngIf="stats()?.attention?.length" class="overflow-x-auto">
+              <div *ngIf="attentionComputers().length" class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
                   <thead class="bg-slate-50 text-slate-600 font-semibold border-b">
                     <tr>
-                      <th class="py-2.5 px-3">Nombre</th>
-                      <th class="py-2.5 px-3">Ubicación</th>
-                      <th class="py-2.5 px-3">Cant.</th>
+                      <th class="py-2.5 px-3">Código</th>
+                      <th class="py-2.5 px-3">Área / Zona</th>
+                      <th class="py-2.5 px-3">Estado</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-100">
-                    <tr *ngFor="let item of stats()?.attention" class="hover:bg-rose-50/50 transition-colors">
-                      <td class="py-2.5 px-3 font-semibold text-slate-800">{{ item.name }}</td>
-                      <td class="py-2.5 px-3 text-slate-600">{{ item.location || 'Sin asignar' }}</td>
-                      <td class="py-2.5 px-3 font-bold text-rose-600">{{ item.quantity }}</td>
+                    <tr *ngFor="let computer of attentionComputers()" class="hover:bg-rose-50/50 transition-colors">
+                      <td class="py-2.5 px-3 font-semibold text-slate-800">{{ computer.code }}</td>
+                      <td class="py-2.5 px-3 text-slate-600">{{ computer.area?.name || 'Sin asignar' }}</td>
+                      <td class="py-2.5 px-3 font-bold text-rose-600">{{ computer.status }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -172,8 +172,8 @@ import { IconsModule } from '../../shared/icons/icons.module';
             </div>
 
             <div class="mt-4 pt-3 border-t text-right">
-              <a routerLink="/admin/categories" class="text-xs text-rose-600 hover:underline font-semibold">
-                Gestionar materiales &rarr;
+              <a routerLink="/admin/computers" class="text-xs text-rose-600 hover:underline font-semibold">
+                Gestionar laptops &rarr;
               </a>
             </div>
           </div>
@@ -188,34 +188,34 @@ import { IconsModule } from '../../shared/icons/icons.module';
                 </h3>
               </div>
 
-              <div *ngIf="!stats()?.recent?.length" class="text-center py-8 text-slate-400 text-sm flex flex-col items-center gap-2">
+              <div *ngIf="!recentComputers().length" class="text-center py-8 text-slate-400 text-sm flex flex-col items-center gap-2">
                 <lucide-icon name="package" [size]="28" class="text-slate-300"></lucide-icon>
                 <span>No hay actividad reciente registrada.</span>
               </div>
 
-              <div *ngIf="stats()?.recent?.length" class="overflow-x-auto">
+              <div *ngIf="recentComputers().length" class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
                   <thead class="bg-slate-50 text-slate-600 font-semibold border-b">
                     <tr>
-                      <th class="py-2.5 px-3">Ítem</th>
-                      <th class="py-2.5 px-3">Categoría</th>
+                      <th class="py-2.5 px-3">Código</th>
+                      <th class="py-2.5 px-3">Área / Zona</th>
                       <th class="py-2.5 px-3">Estado</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-100">
-                    <tr *ngFor="let item of stats()?.recent" class="hover:bg-slate-50 transition-colors">
-                      <td class="py-2.5 px-3 font-semibold text-slate-800">{{ item.name }}</td>
-                      <td class="py-2.5 px-3 text-slate-600">{{ item.category?.name || '-' }}</td>
+                    <tr *ngFor="let computer of recentComputers()" class="hover:bg-slate-50 transition-colors">
+                      <td class="py-2.5 px-3 font-semibold text-slate-800">{{ computer.code }}</td>
+                      <td class="py-2.5 px-3 text-slate-600">{{ computer.area?.name || '-' }}</td>
                       <td class="py-2.5 px-3">
                         <span
                           class="px-2 py-0.5 rounded-full text-[10px] font-bold"
                           [ngClass]="{
-                            'bg-emerald-100 text-emerald-800': item.status === 'Bueno',
-                            'bg-amber-100 text-amber-800': item.status === 'Regular',
-                            'bg-rose-100 text-rose-800': item.status === 'Malo'
+                            'bg-emerald-100 text-emerald-800': computer.status === 'Bueno',
+                            'bg-amber-100 text-amber-800': computer.status === 'Regular',
+                            'bg-rose-100 text-rose-800': computer.status === 'Malo' || computer.status === 'Descarte'
                           }"
                         >
-                          {{ item.status }}
+                          {{ computer.status }}
                         </span>
                       </td>
                     </tr>
@@ -236,11 +236,12 @@ import { IconsModule } from '../../shared/icons/icons.module';
   `,
 })
 export class DashboardComponent implements OnInit {
-  stats = signal<InventoryStats | null>(null);
   groups = signal<Group[]>([]);
   materialSummary = signal<MaterialSummary[]>([]);
   stocks = signal<AreaMaterialStock[]>([]);
   computers = signal<Computer[]>([]);
+  distributionExpanded = signal(false);
+  readonly collapsedGroupLimit = 6;
   selectedAreaId = '';
   materialTotals() {
     const totals = new Map(this.materialSummary().map((material) => [material.name, material.quantity]));
@@ -249,9 +250,12 @@ export class DashboardComponent implements OnInit {
     if (laptops) totals.set('Laptops', (totals.get('Laptops') || 0) + laptops);
     return Array.from(totals, ([name, quantity]) => ({ name, quantity }));
   }
-  materialTotal() { return this.materialSummary().reduce((total, material) => total + material.quantity, 0); }
+  materialTotal() { const areaId = this.selectedAreaId ? Number(this.selectedAreaId) : null; const laptops = this.computers().filter((computer) => !areaId || computer.areaId === areaId).length; return this.materialSummary().reduce((total, material) => total + material.quantity, 0) + laptops; }
+  visibleGroups() { return this.distributionExpanded() ? this.groups() : this.groups().slice(0, this.collapsedGroupLimit); }
   groupItemCount(groupId: number) { return this.stocks().filter((stock) => stock.groupId === groupId).reduce((total, stock) => total + stock.quantity, 0) + this.computers().filter((computer) => computer.areaId === groupId).length; }
   computerStatusCount(status: string) { return this.computers().filter((computer) => computer.status === status).length; }
+  attentionComputers() { return this.computers().filter((computer) => computer.status === 'Malo'); }
+  recentComputers() { return [...this.computers()].sort((a, b) => { const byDate = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); return byDate || b.id - a.id; }).slice(0, 5); }
   isLoading = signal(true);
 
   constructor(private readonly apiService: ApiService) {}
@@ -262,16 +266,10 @@ export class DashboardComponent implements OnInit {
 
   loadData() {
     this.isLoading.set(true);
-    this.apiService.get<InventoryStats>('/inventory/stats').subscribe({
-      next: (data) => {
-        this.stats.set(data);
-        this.apiService.get<Group[]>('/groups').subscribe({
-          next: (groups) => {
-            this.groups.set(groups);
-            this.loadMaterialTotals();
-          },
-          error: () => this.isLoading.set(false),
-        });
+    this.apiService.get<Group[]>('/groups').subscribe({
+      next: (groups) => {
+        this.groups.set(groups);
+        this.loadMaterialTotals();
       },
       error: () => this.isLoading.set(false),
     });

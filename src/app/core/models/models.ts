@@ -33,7 +33,7 @@ export interface Category {
 export interface Material { id: number; name: string; }
 export interface AreaMaterialStock { id: number; groupId: number; materialId: number; quantity: number; group?: Group; material?: Material; }
 export interface MaterialSummary { id: number; name: string; quantity: number; }
-export interface Computer { id: number; code: string; status: string; areaId: number; area?: Group; observation?: string; }
+export interface Computer { id: number; code: string; status: string; areaId: number; area?: Group; observation?: string; createdAt?: string; updatedAt?: string; }
 
 export interface InventoryItem {
   id: number;
