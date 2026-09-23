@@ -76,6 +76,7 @@ export interface Teacher {
   email?: string;
   address?: string;
   specialty?: string;
+  educationLevel: 'Inicial' | 'Primaria' | 'Secundaria' | 'Administrativo' | 'Directivo' | string;
   status: 'Activo' | 'Inactivo' | string;
   createdAt?: string;
 }
