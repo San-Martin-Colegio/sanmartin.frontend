@@ -29,7 +29,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
       </div>
 
       <!-- Search bar -->
-      <div class="card-smp p-4 flex items-center justify-between gap-4">
+      <div class="card-smp p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div class="relative flex-1 max-w-md">
           <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
             <lucide-icon name="search" [size]="16"></lucide-icon>
@@ -42,6 +42,10 @@ import { IconsModule } from '../../shared/icons/icons.module';
             class="input-smp pl-9"
           />
         </div>
+        <select [(ngModel)]="selectedEducationLevel" (ngModelChange)="page = 1" class="select-smp sm:max-w-[190px]" aria-label="Filtrar por nivel educativo">
+          <option value="">Todos los niveles</option>
+          <option *ngFor="let level of educationLevels" [value]="level">{{ level }}</option>
+        </select>
         <div class="text-xs font-semibold text-slate-500">
           Total: <span class="text-primary font-bold">{{ filteredTeachers().length }}</span> docentes
         </div>
@@ -69,6 +73,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
               <tr>
                 <th class="py-3 px-4">Docente</th>
                 <th class="py-3 px-4">Especialidad</th>
+                <th class="py-3 px-4">Nivel</th>
                 <th class="py-3 px-4">Teléfono / Celular</th>
                 <th class="py-3 px-4">Correo Electrónico</th>
                 <th class="py-3 px-4">Estado</th>
@@ -93,6 +98,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
                     {{ t.specialty || 'General' }}
                   </span>
                 </td>
+                <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 font-semibold text-xs">{{ t.educationLevel || 'Secundaria' }}</span></td>
                 <td class="py-3.5 px-4 text-slate-600 font-mono">{{ t.phone || '-' }}</td>
                 <td class="py-3.5 px-4 text-slate-600">{{ t.email || '-' }}</td>
                 <td class="py-3.5 px-4">
@@ -176,6 +182,15 @@ import { IconsModule } from '../../shared/icons/icons.module';
                 class="input-smp"
               />
             </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Nivel educativo *</label>
+              <select [(ngModel)]="formData.educationLevel" class="select-smp">
+                <option *ngFor="let level of educationLevels" [value]="level">{{ level }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Estado</label>
               <select [(ngModel)]="formData.status" class="select-smp">
@@ -263,6 +278,8 @@ import { IconsModule } from '../../shared/icons/icons.module';
 export class TeachersComponent implements OnInit {
   teachers = signal<Teacher[]>([]);
   searchQuery = '';
+  selectedEducationLevel = '';
+  readonly educationLevels = ['Inicial', 'Primaria', 'Secundaria', 'Administrativo', 'Directivo'];
   page = 1;
   readonly pageSize = 10;
   isLoading = signal(true);
@@ -282,16 +299,18 @@ export class TeachersComponent implements OnInit {
     email: '',
     address: '',
     specialty: '',
+    educationLevel: 'Secundaria',
     status: 'Activo',
   };
 
   filteredTeachers(): Teacher[] {
     const q = this.searchQuery.trim().toLowerCase();
-    if (!q) return this.teachers();
     return this.teachers().filter((t) => {
       const full = `${t.firstName} ${t.lastName}`.toLowerCase();
       const spec = (t.specialty || '').toLowerCase();
-      return full.includes(q) || spec.includes(q);
+      const matchesSearch = !q || full.includes(q) || spec.includes(q);
+      const matchesLevel = !this.selectedEducationLevel || (t.educationLevel || 'Secundaria') === this.selectedEducationLevel;
+      return matchesSearch && matchesLevel;
     });
   }
   pageCount() { return Math.max(1, Math.ceil(this.filteredTeachers().length / this.pageSize)); }
@@ -335,6 +354,7 @@ export class TeachersComponent implements OnInit {
       email: '',
       address: '',
       specialty: '',
+      educationLevel: 'Secundaria',
       status: 'Activo',
     };
     this.isModalOpen.set(true);
@@ -349,6 +369,7 @@ export class TeachersComponent implements OnInit {
       email: teacher.email || '',
       address: teacher.address || '',
       specialty: teacher.specialty || '',
+      educationLevel: teacher.educationLevel || 'Secundaria',
       status: teacher.status || 'Activo',
     };
     this.isModalOpen.set(true);
@@ -370,6 +391,7 @@ export class TeachersComponent implements OnInit {
       email: this.formData.email || undefined,
       address: this.formData.address || undefined,
       specialty: this.formData.specialty || undefined,
+      educationLevel: this.formData.educationLevel,
       status: this.formData.status,
     };
 

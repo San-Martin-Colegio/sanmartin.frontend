@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
-import { InventoryStats, Group, MaterialSummary, Computer } from '../../core/models/models';
+import { AreaMaterialStock, InventoryStats, Group, MaterialSummary, Computer } from '../../core/models/models';
 import { IconsModule } from '../../shared/icons/icons.module';
 
 @Component({
@@ -128,7 +128,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
               </div>
               <p class="font-bold text-slate-800 text-xs truncate">{{ g.name }}</p>
               <p class="text-xs text-slate-500 font-semibold mt-1">
-                {{ stats()?.byGroup?.[g.id] || 0 }} materiales
+                {{ groupItemCount(g.id) }} materiales
               </p>
             </a>
           </div>
@@ -239,6 +239,7 @@ export class DashboardComponent implements OnInit {
   stats = signal<InventoryStats | null>(null);
   groups = signal<Group[]>([]);
   materialSummary = signal<MaterialSummary[]>([]);
+  stocks = signal<AreaMaterialStock[]>([]);
   computers = signal<Computer[]>([]);
   selectedAreaId = '';
   materialTotals() {
@@ -249,6 +250,7 @@ export class DashboardComponent implements OnInit {
     return Array.from(totals, ([name, quantity]) => ({ name, quantity }));
   }
   materialTotal() { return this.materialSummary().reduce((total, material) => total + material.quantity, 0); }
+  groupItemCount(groupId: number) { return this.stocks().filter((stock) => stock.groupId === groupId).reduce((total, stock) => total + stock.quantity, 0) + this.computers().filter((computer) => computer.areaId === groupId).length; }
   computerStatusCount(status: string) { return this.computers().filter((computer) => computer.status === status).length; }
   isLoading = signal(true);
 
@@ -284,7 +286,7 @@ export class DashboardComponent implements OnInit {
       next: (materials) => {
         this.materialSummary.set(materials);
         this.apiService.get<Computer[]>('/computers').subscribe({
-          next: (computers) => { this.computers.set(computers); this.isLoading.set(false); },
+          next: (computers) => { this.computers.set(computers); this.apiService.get<AreaMaterialStock[]>('/materials/stocks').subscribe({ next: (stocks) => { this.stocks.set(stocks); this.isLoading.set(false); }, error: () => this.isLoading.set(false) }); },
           error: () => this.isLoading.set(false),
         });
       },

@@ -50,7 +50,13 @@ import { IconsModule } from '../../shared/icons/icons.module';
       </div>
 
       <!-- Teacher Selector Bar -->
-      <div class="card-smp p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
+      <div class="card-smp p-5 flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white">
+        <div class="w-full md:max-w-[190px]">
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Nivel educativo</label>
+          <select [ngModel]="selectedEducationLevel()" (ngModelChange)="onEducationLevelChange($event)" class="select-smp font-semibold text-sm">
+            <option *ngFor="let level of educationLevels" [value]="level">{{ level }}</option>
+          </select>
+        </div>
         <div class="flex-1 max-w-md">
           <label class="block text-xs font-semibold text-slate-600 mb-1.5">Seleccionar Docente</label>
           <select
@@ -59,18 +65,19 @@ import { IconsModule } from '../../shared/icons/icons.module';
             class="select-smp font-semibold text-sm"
           >
             <option [ngValue]="null" disabled>-- Selecciona un docente --</option>
-            <option *ngFor="let t of teachers()" [ngValue]="t.id">
+            <option *ngFor="let t of filteredTeachers()" [ngValue]="t.id">
               {{ t.lastName }}, {{ t.firstName }} ({{ t.specialty || 'General' }})
             </option>
           </select>
         </div>
 
-        <div *ngIf="currentTeacher()" class="flex-1 border-t md:border-t-0 md:border-l md:pl-6 pt-3 md:pt-0">
+        <div *ngIf="currentTeacher()" class="flex-1 border-t md:border-t-0 md:border-l md:pl-6 pt-3 md:pt-0 md:pb-1">
           <p class="text-xs text-slate-400 font-medium">Docente activo:</p>
           <p class="text-sm font-bold text-slate-900">
             {{ currentTeacher()?.firstName }} {{ currentTeacher()?.lastName }}
           </p>
           <p class="text-xs text-slate-500">
+            Nivel: <strong>{{ currentTeacher()?.educationLevel || 'Secundaria' }}</strong> |
             Especialidad: <strong>{{ currentTeacher()?.specialty || 'Sin especialidad' }}</strong> |
             Celular: <strong>{{ currentTeacher()?.phone || 'No registrado' }}</strong>
           </p>
@@ -255,6 +262,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
 })
 export class SchedulesComponent implements OnInit {
   teachers = signal<Teacher[]>([]);
+  selectedEducationLevel = signal('Secundaria');
   selectedTeacherId = signal<number | null>(null);
   schedules = signal<Schedule[]>([]);
 
@@ -265,6 +273,7 @@ export class SchedulesComponent implements OnInit {
 
   days = SCHEDULE_DAYS;
   blocks = SCHEDULE_BLOCKS;
+  readonly educationLevels = ['Inicial', 'Primaria', 'Secundaria', 'Administrativo', 'Directivo'];
 
   isModalOpen = signal(false);
   editingSchedule = signal<Schedule | null>(null);
@@ -281,6 +290,10 @@ export class SchedulesComponent implements OnInit {
     const id = this.selectedTeacherId();
     if (!id) return undefined;
     return this.teachers().find((t) => t.id === id);
+  }
+
+  filteredTeachers(): Teacher[] {
+    return this.teachers().filter((teacher) => (teacher.educationLevel || 'Secundaria') === this.selectedEducationLevel());
   }
 
   constructor(
@@ -300,15 +313,31 @@ export class SchedulesComponent implements OnInit {
         this.route.queryParams.subscribe((params) => {
           if (params['teacherId']) {
             const parsed = parseInt(params['teacherId'], 10);
-            this.selectedTeacherId.set(parsed);
-            this.loadSchedules(parsed);
-          } else if (teachers.length > 0) {
-            this.selectedTeacherId.set(teachers[0].id);
-            this.loadSchedules(teachers[0].id);
+            const requestedTeacher = teachers.find((teacher) => teacher.id === parsed);
+            if (requestedTeacher) {
+              this.selectedEducationLevel.set(requestedTeacher.educationLevel || 'Secundaria');
+              this.selectedTeacherId.set(parsed);
+              this.loadSchedules(parsed);
+              return;
+            }
+          }
+          const firstTeacher = this.filteredTeachers()[0];
+          if (firstTeacher) {
+            this.selectedTeacherId.set(firstTeacher.id);
+            this.loadSchedules(firstTeacher.id);
+          } else {
+            this.selectedTeacherId.set(null);
+            this.schedules.set([]);
           }
         });
       },
     });
+  }
+
+  onEducationLevelChange(level: string) {
+    this.selectedEducationLevel.set(level);
+    const firstTeacher = this.filteredTeachers()[0];
+    this.onTeacherChange(firstTeacher?.id || null);
   }
 
   onTeacherChange(id: number | null) {
