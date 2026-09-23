@@ -38,6 +38,7 @@ import {
   Filter,
   Monitor,
   Key,
+  ChevronDown,
 } from 'lucide-angular';
 
 const icons = {
@@ -78,6 +79,7 @@ const icons = {
   Filter,
   Monitor,
   Key,
+  ChevronDown,
 };
 
 @NgModule({

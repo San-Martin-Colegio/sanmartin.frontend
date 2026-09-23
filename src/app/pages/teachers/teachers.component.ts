@@ -120,11 +120,11 @@ import { IconsModule } from '../../shared/icons/icons.module';
                   </button>
                   <button
                     (click)="openEditModal(t)"
-                    class="px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/10 rounded-lg transition-colors inline-flex items-center gap-1"
+                    class="p-1.5 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors inline-flex items-center justify-center"
+                    [attr.aria-label]="'Editar ' + t.firstName + ' ' + t.lastName"
                     title="Editar"
                   >
-                    <lucide-icon name="pencil" [size]="13"></lucide-icon>
-                    <span>Editar</span>
+                    <lucide-icon name="pencil" [size]="14"></lucide-icon>
                   </button>
                   <button
                     (click)="confirmDelete(t)"

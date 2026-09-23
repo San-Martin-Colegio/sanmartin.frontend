@@ -157,17 +157,19 @@ import { IconsModule } from '../../shared/icons/icons.module';
                 <td class="py-3 px-4 text-right space-x-2 whitespace-nowrap">
                   <button
                     (click)="openEditModal(item)"
-                    class="px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/10 rounded-lg transition-colors inline-flex items-center gap-1"
+                    class="p-1.5 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors inline-flex items-center justify-center"
+                    [attr.aria-label]="'Editar ' + item.name"
+                    title="Editar"
                   >
-                    <lucide-icon name="pencil" [size]="13"></lucide-icon>
-                    <span>Editar</span>
+                    <lucide-icon name="pencil" [size]="14"></lucide-icon>
                   </button>
                   <button
                     (click)="confirmDelete(item)"
-                    class="px-2.5 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors inline-flex items-center gap-1"
+                    class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors inline-flex items-center justify-center"
+                    [attr.aria-label]="'Eliminar ' + item.name"
+                    title="Eliminar"
                   >
-                    <lucide-icon name="trash-2" [size]="13"></lucide-icon>
-                    <span>Eliminar</span>
+                    <lucide-icon name="trash-2" [size]="14"></lucide-icon>
                   </button>
                 </td>
               </tr>
