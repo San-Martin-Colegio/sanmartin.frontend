@@ -1,11 +1,15 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Teacher, Schedule } from '../../core/models/models';
-import { SCHEDULE_BLOCKS, SCHEDULE_DAYS } from '../../core/constants/schedule-constants';
+import {
+  ScheduleMarkerInfo,
+  SCHEDULE_DAYS,
+  getScheduleLayout,
+} from '../../core/constants/schedule-constants';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { IconsModule } from '../../shared/icons/icons.module';
 
@@ -116,21 +120,16 @@ import { IconsModule } from '../../shared/icons/icons.module';
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 text-xs">
-              <ng-container *ngFor="let b of blocks">
-                <tr *ngIf="b.block === 8" class="bg-orange-100/70 font-bold text-orange-900 border-y-2 border-orange-200">
+              <ng-container *ngFor="let b of blocks()">
+                <tr
+                  *ngFor="let marker of markersBefore(b.block)"
+                  class="font-bold border-y-2"
+                  [ngClass]="markerClass(marker)"
+                >
                   <td colspan="7" class="py-2 text-center tracking-wider text-xs">
                     <div class="flex items-center justify-center gap-1.5">
-                      <lucide-icon name="coffee" [size]="15" class="text-orange-800"></lucide-icon>
-                      <span>ALMUERZO (12:30 - 13:00)</span>
-                    </div>
-                  </td>
-                </tr>
-                <!-- Recreo Separator between Block 3 and 4 -->
-                <tr *ngIf="b.block === 4" class="bg-amber-100/60 font-bold text-amber-900 border-y-2 border-amber-200">
-                  <td colspan="7" class="py-2 text-center tracking-wider text-xs">
-                    <div class="flex items-center justify-center gap-1.5">
-                      <lucide-icon name="coffee" [size]="15" class="text-amber-800"></lucide-icon>
-                      <span>RECREO (09:15 - 09:30)</span>
+                      <lucide-icon [name]="marker.type === 'shift' ? 'clock' : 'coffee'" [size]="15"></lucide-icon>
+                      <span>{{ marker.label }}</span>
                     </div>
                   </td>
                 </tr>
@@ -280,7 +279,10 @@ export class SchedulesComponent implements OnInit {
   isExportingTeacher = signal(false);
 
   days = SCHEDULE_DAYS;
-  blocks = SCHEDULE_BLOCKS;
+  scheduleLayout = computed(() =>
+    getScheduleLayout(this.currentTeacher()?.educationLevel || this.selectedEducationLevel()),
+  );
+  blocks = computed(() => this.scheduleLayout().blocks);
   readonly educationLevels = ['Inicial', 'Primaria', 'Secundaria', 'Administrativo', 'Directivo'];
 
   isModalOpen = signal(false);
@@ -373,6 +375,20 @@ export class SchedulesComponent implements OnInit {
 
   getSchedule(day: string, block: number): Schedule | undefined {
     return this.schedules().find((s) => s.day === day && s.block === block);
+  }
+
+  markersBefore(block: number): ScheduleMarkerInfo[] {
+    return this.scheduleLayout().markers.filter((marker) => marker.beforeBlock === block);
+  }
+
+  markerClass(marker: ScheduleMarkerInfo): string {
+    if (marker.type === 'shift') {
+      return 'bg-blue-100/80 text-blue-900 border-blue-200';
+    }
+    if (marker.type === 'lunch') {
+      return 'bg-orange-100/70 text-orange-900 border-orange-200';
+    }
+    return 'bg-amber-100/60 text-amber-900 border-amber-200';
   }
 
   onCellClick(day: string, block: number) {
