@@ -22,7 +22,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
       <!-- Header with Export Actions -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Horarios Académicos</h2>
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Horarios Académicos y del Personal</h2>
           <p class="text-sm text-slate-500 mt-0.5">
             Distribución pedagógica semanal y generación de horarios en Excel.
           </p>
@@ -56,13 +56,13 @@ import { IconsModule } from '../../shared/icons/icons.module';
       <!-- Teacher Selector Bar -->
       <div class="card-smp p-5 flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white">
         <div class="w-full md:max-w-[190px]">
-          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Nivel educativo</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Categoría del personal</label>
           <select [ngModel]="selectedEducationLevel()" (ngModelChange)="onEducationLevelChange($event)" class="select-smp font-semibold text-sm">
             <option *ngFor="let level of educationLevels" [value]="level">{{ level }}</option>
           </select>
         </div>
         <div class="flex-1 max-w-md">
-          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Seleccionar Docente</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Seleccionar personal</label>
           <select
             [ngModel]="selectedTeacherId()"
             (ngModelChange)="onTeacherChange($event)"
@@ -76,12 +76,12 @@ import { IconsModule } from '../../shared/icons/icons.module';
         </div>
 
         <div *ngIf="currentTeacher()" class="flex-1 border-t md:border-t-0 md:border-l md:pl-6 pt-3 md:pt-0 md:pb-1">
-          <p class="text-xs text-slate-400 font-medium">Docente activo:</p>
+          <p class="text-xs text-slate-400 font-medium">Personal seleccionado:</p>
           <p class="text-sm font-bold text-slate-900">
             {{ currentTeacher()?.firstName }} {{ currentTeacher()?.lastName }}
           </p>
           <p class="text-xs text-slate-500">
-            Nivel: <strong>{{ currentTeacher()?.educationLevel || 'Secundaria' }}</strong> |
+            Categoría: <strong>{{ currentTeacher()?.educationLevel || 'Secundaria' }}</strong> |
             Especialidad: <strong>{{ currentTeacher()?.specialty || 'Sin especialidad' }}</strong> |
             Celular: <strong>{{ currentTeacher()?.phone || 'No registrado' }}</strong>
           </p>
@@ -283,7 +283,15 @@ export class SchedulesComponent implements OnInit {
     getScheduleLayout(this.currentTeacher()?.educationLevel || this.selectedEducationLevel()),
   );
   blocks = computed(() => this.scheduleLayout().blocks);
-  readonly educationLevels = ['Inicial', 'Primaria', 'Secundaria', 'Administrativo', 'Directivo'];
+  readonly educationLevels = [
+    'Inicial',
+    'Primaria',
+    'Secundaria',
+    'Administrativo',
+    'Directivo',
+    'Auxiliares',
+    'Vigilantes',
+  ];
 
   isModalOpen = signal(false);
   editingSchedule = signal<Schedule | null>(null);

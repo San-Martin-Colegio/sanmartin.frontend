@@ -279,7 +279,15 @@ export class TeachersComponent implements OnInit {
   teachers = signal<Teacher[]>([]);
   searchQuery = '';
   selectedEducationLevel = '';
-  readonly educationLevels = ['Inicial', 'Primaria', 'Secundaria', 'Administrativo', 'Directivo'];
+  readonly educationLevels = [
+    'Inicial',
+    'Primaria',
+    'Secundaria',
+    'Administrativo',
+    'Directivo',
+    'Auxiliares',
+    'Vigilantes',
+  ];
   page = 1;
   readonly pageSize = 10;
   isLoading = signal(true);
