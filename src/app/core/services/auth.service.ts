@@ -1,47 +1,27 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, map } from 'rxjs';
 import { ApiService } from './api.service';
 import { User, LoginResponse } from '../models/models';
-
-const TOKEN_KEY = 'smp_token';
-const USER_KEY = 'smp_user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   currentUser = signal<User | null>(null);
-  token = signal<string | null>(null);
-  isAuthenticated = computed(() => !!this.token() && !!this.currentUser());
+  isAuthenticated = computed(() => !!this.currentUser());
 
   constructor(
     private readonly apiService: ApiService,
     private readonly router: Router,
   ) {
-    this.loadFromStorage();
-  }
-
-  private loadFromStorage() {
-    try {
-      const storedToken = localStorage.getItem(TOKEN_KEY);
-      const storedUser = localStorage.getItem(USER_KEY);
-      if (storedToken && storedUser) {
-        this.token.set(storedToken);
-        this.currentUser.set(JSON.parse(storedUser));
-      }
-    } catch {
-      this.clearStorage();
-    }
+    this.clearLegacyStorage();
   }
 
   login(credentials: { username: string; password: string }): Observable<LoginResponse> {
     return this.apiService.post<LoginResponse>('/auth/login', credentials).pipe(
       tap((res) => {
-        if (res.accessToken && res.user) {
-          localStorage.setItem(TOKEN_KEY, res.accessToken);
-          localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-          this.token.set(res.accessToken);
+        if (res.user) {
           this.currentUser.set(res.user);
         }
       }),
@@ -53,32 +33,34 @@ export class AuthService {
       catchError(() => of(null)),
     ).subscribe();
 
-    this.clearStorage();
+    this.clearSession();
     this.router.navigate(['/login']);
   }
 
-  private clearStorage() {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    this.token.set(null);
+  private clearSession() {
     this.currentUser.set(null);
+    this.clearLegacyStorage();
   }
 
-  getToken(): string | null {
-    return this.token();
+  private clearLegacyStorage() {
+    // Elimina JWT y perfil que versiones anteriores guardaban en almacenamiento
+    // accesible desde JavaScript. La sesión vigente vive solo en cookie HttpOnly.
+    localStorage.removeItem('smp_token');
+    localStorage.removeItem('smp_user');
   }
 
   refreshProfile(): Observable<User | null> {
-    if (!this.token()) return of(null);
     return this.apiService.get<User>('/auth/me').pipe(
-      tap((user) => {
-        this.currentUser.set(user);
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-      }),
+      tap((user) => this.currentUser.set(user)),
       catchError(() => {
-        this.logout();
+        this.clearSession();
         return of(null);
       }),
     );
+  }
+
+  validateSession(): Observable<boolean> {
+    if (this.currentUser()) return of(true);
+    return this.refreshProfile().pipe(map((user) => !!user));
   }
 }

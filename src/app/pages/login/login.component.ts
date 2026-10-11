@@ -119,9 +119,9 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.authService.getToken()) {
-      this.router.navigate(['/admin/dashboard']);
-    }
+    this.authService.validateSession().subscribe((authenticated) => {
+      if (authenticated) this.router.navigate(['/admin/dashboard']);
+    });
   }
 
   togglePasswordVisibility() {

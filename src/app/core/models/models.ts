@@ -2,11 +2,11 @@ export interface User {
   id: number;
   username: string;
   fullName: string;
+  role?: string;
   createdAt?: string;
 }
 
 export interface LoginResponse {
-  accessToken: string;
   user: User;
 }
 
