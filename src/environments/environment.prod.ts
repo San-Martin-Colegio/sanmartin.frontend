@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sanmartin-backend-d3db.onrender.com/api',
+  apiUrl: 'https://sanmartin-backend-yamir.onrender.com/api',
 };
