@@ -52,11 +52,11 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/admin/dashboard',
+    redirectTo: '/login',
     pathMatch: 'full',
   },
   {
     path: '**',
-    redirectTo: '/admin/dashboard',
+    redirectTo: '/login',
   },
 ];

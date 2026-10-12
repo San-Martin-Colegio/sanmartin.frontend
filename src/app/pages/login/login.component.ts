@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -106,7 +106,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
     </div>
   `,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   username = '';
   password = '';
   showPassword = signal(false);
@@ -117,12 +117,6 @@ export class LoginComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly router: Router,
   ) {}
-
-  ngOnInit() {
-    this.authService.validateSession().subscribe((authenticated) => {
-      if (authenticated) this.router.navigate(['/admin/dashboard']);
-    });
-  }
 
   togglePasswordVisibility() {
     this.showPassword.update((v) => !v);
